@@ -1,0 +1,396 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+#R Studio and Statistics
+#How does the farmer's profile influence the production ?
+
+#--> our csv file:
+https://cloudlasalle-my.sharepoint.com/:x:/g/personal/charline_cantau_etu_unilasalle_fr/EYABOT-0bDRNi8D_i102AeMBPA00cGD7E20CEWzTS0HKDw?e=FuW6C4
+
+#--> our presentation: 
+#https://cloudlasalle-my.sharepoint.com/:p:/g/personal/charline_cantau_etu_unilasalle_fr/EZuuZDAWmRlElJiCLW6PGVkBR7KgSMoFlb-87qYVKsDxug?e=mfIJMa 
+
+#we tried to follow the order of the presentation, but we have inserted tests and graphic representations that we did not use orally
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Import and format of the database  ##
+
+#base<-read.csv2("/Users/edking/Library/CloudStorage/OneDrive-UniLaSalle/I-SAFE TU/Semester 4/TU 3 Data Processing/R Software/RICA_isafe_students(our data)_ED.csv") 
+#print (base) 
+
+fn = "/Users/edking/Library/CloudStorage/OneDrive-UniLaSalle/I-SAFE TU/Semester 4/TU 3 Data Processing/R Software/RICA_isafe_students(our data)_ED.csv" 
+df = read.csv2 (fn, header = TRUE, sep = ";", dec = ".") 
+
+
+
+# Changing the data class type 
+
+df$CHAFF <- as.numeric(as.character(df$CHAFF)) 
+df$UTATO <- as.numeric(as.character(df$UTATO)) 
+df$STREV <- as.numeric(as.character(df$STREV)) 
+df$SEXEP <- as.character(as.numeric(df$SEXEP)) 
+
+ 
+
+# Or get summary statistics of the column 
+
+summary(df) 
+summary(df$CHAFF) 
+summary(df$UTATO) 
+summary(df$STREV) 
+summary(df$SEXEP) 
+
+ 
+
+#Check for numeric value 
+
+is.numeric(df$SEXEP) # FALSE
+is.numeric(df$UTATO) # TRUE 
+is.numeric(df$CHAFF) 
+
+ 
+
+# ask for the shape of the dataframe 
+
+dim(df) # 7203 rows and 6 columns
+
+
+
+
+
+
+## Perform the first analysis ##
+
+# count the number of elements in each category 
+
+table(df$OTEXE) 
+tt = table(df$OTEXE) # Create a bar plot 
+barplot(tt, xlab = "OTEXE", ylab = "Frequncy", main = "Bar Chart for Techno-Economic Orientation 17", ylim=c(0,1200)) 
+#hist(tt, xlab = "OTEXE", ylab = "Frequncy", main = "Hiatogram Chart for Techno-Economic Orientation 17") 
+
+
+table(df$SEXEP) 
+ss = table(df$SEXEP)
+# Create pie chart 
+labels <- c("NO Category", "Male", "Female") 
+colors <- c("white", "powderblue", "pink") 
+pie(ss, clockwise = TRUE, col=colors, labels = paste(ss), main = "Pie Chart of Gender Population") 
+legend("topright", legend = c("NO Category","Male","Female"), fill = colors) 
+     
+
+table(df$TRA05) 
+tr = table(df$TRA05) # Create a bar plot 
+#par(mar = c(5, 5, 4, 2) + 0.1) 
+barplot(tr, xlab = "TRA05", ylab = "Frequncy", main = "Bar Chart Age Range of Farm Managers",ylim=c(0,2000), width = 0.5, 
+        col=c("blue","purple","pink","red","orange","yellow","green","brown","black","gray","lightcoral","darkmagenta","darkslateblue","forestgreen"), 
+        legend.text=c("1: Less than 21","2: 21-25years", "3: 26-30years","4: 31-35years","5: 36-40years","6: 41-45years","7: 46-50years","8: 51-55years", 
+                      "9: 56-60years","10: 61-65years","11: 66-70years","12: 71-75years","13: 76-80years", "14: more than 80"),  
+        names=c("1","2","3","4","5","6","7","8","9","10","11","12","13","14")) 
+ 
+
+table(df$UTATO) 
+ut = table(df$UTATO) # Create a bar plot 
+barplot(ut, xlab = "UTATO", ylab = "Frequncy", main = "Bar Chart for Techno-Economic Orientation 17") 
+ 
+
+summary(df) 
+
+
+# --> Creating an histogram to have an overview of the OTEXE variable
+hist(df$OTEXE, 
+     main = "Histogram representing the OTEXE variable",
+     xlab = "OTEXE",
+     ylab = "Frequency")
+
+# --> to plot the graph linking the annual revenues to the annual work unit
+df$CHAFF <- as.numeric(as.character(df$CHAFF))
+plot(df$UTATO, df$CHAFF, xlim = c(0,50),
+	xlab = "UTATO", ylab = "CHAFF",
+	main = "Graph linking annual revenues in function of AWU")
+
+# --> pie chart of the proportion of technico-economic orientation for each gender
+
+# male pie chart
+Male = subset(df$OTEXE, df$SEXEP == 1)
+tab1(Male, sort.group = "decreasing", cum.percent = TRUE)
+pie(c(13.2, 7.2, 3.4, 2.7, 13.7, 1.6, 5.1, 13.2, 9.9, 3.6, 5.9, 7.9, 1.5, 0.8, 1.6, 6.7, 2.1),
+	clockwise=TRUE, radius=1,
+	main="Tecnico-Economic orientation repartition for male",
+	col=c("blue","purple","pink","red","orange","yellow","green","brown","black","gray","lightcoral","darkmagenta","darkslateblue","forestgreen","tomato2", "salmon","darkorange1"), label=c("15", "16", "28", "29", "37", "38", "39", "45", "46", "47", "48", "50", "61", "73", "74", "83", "84"))
+
+# female pie chart
+Female = subset(df$OTEXE, df$SEXEP == 2)
+tab1(Female, sort.group = "decreasing", cum.percent = TRUE)
+pie(c(12.3, 4.4, 3.1, 3.9, 22.3, 1.8, 5.4, 6.8, 8.9, 2.3, 11.0, 7.4, 1.1, 1.2, 1.7, 4.5, 2.0), clockwise=TRUE, radius=1,
+	main="Tecnico-Economic orientation repartition for Female",
+	col=c("blue","purple","pink","red","orange","yellow","green","brown","black","gray","lightcoral","darkmagenta","darkslateblue","forestgreen","tomato2", "salmon","darkorange1"), label=c("15", "16", "28", "29", "37", "38", "39", "45", "46", "47", "48", "50", "61", "73", "74", "83", "84"))
+
+
+
+# --> box plot of the standardized revenue for the 4 main types of farm from the previous pie chart + the type that has the best revenues
+
+type15 = subset(df$STREV, df$OTEXE == 15)
+type45 = subset(df$STREV, df$OTEXE == 45)
+type37 = subset(df$STREV, df$OTEXE == 37)
+type48 = subset(df$STREV, df$OTEXE == 48)
+type50 = subset(df$STREV, df$OTEXE == 50)
+
+boxplot(type15,main="Revenue for cereal, oilseed & protein crop farms",ylab="revenue (in euros/AWU)",col="forestgreen", ylim=c(0,500000))
+boxplot(type37,main="Revenue for farms specializing in quality viticulture",ylab="revenue (in euros/AWU)",col="darkolivegreen1", ylim=c(0,500000))
+boxplot(type45,main="Revenue for specialized dairy cattle farms",ylab="revenue (in euros/AWU)",col="chartreuse3", ylim=c(0,500000))
+boxplot(type48,main="Revenue for farms with sheep, goats & other herbivores",ylab="revenue (in euros/AWU)",col="gold", ylim=c(0,500000))
+boxplot(type50,main="Revenue for granivore farms",ylab="revenue (in euros/AWU)",col="goldenrod1", ylim=c(0,500000))
+# change of scale because to see the entire box
+boxplot(type50,main="Revenue for granivore farms",ylab="revenue (in euros/AWU)",col="goldenrod1", ylim=c(0,1000000))
+
+
+
+# --> bar plot: Average revenue according to the age range
+
+# Selection of the columns 
+age_rev <- df[c("TRA05", "STREV")] 
+print(age_rev) 
+
+
+#Selection of the rows 
+sel_rows <- subset(age_rev, TRA05 ==2 ) # Do for all age ranges 
+print(sel_rows) 
+
+
+# Bar plot the selected DATA 
+barplot(sel_rows$STREV, xlab = "x", ylab = "y", main = "Bar Chart Selected Age Range")
+barplot(c(96855,120998,120100,120431,120417,120345,120360,120366,120376,120355,120493,120489,120217,122451), 
+        col=c("blue","purple","pink","red","orange","yellow","green","brown","black","gray","lightcoral","darkmagenta","darkslateblue","forestgreen"), 
+        main="average standardized revenue according to the farmer's age", 
+        horiz=FALSE, names=c("1","2","3","4","5","6","7","8","9","10","11","12","13","14")) 
+legend("topright",legend=c("1: Less than 21","2: 21-25years", "3: 26-30years","4: 31-35years","5: 36-40years","6: 41-45years","7: 46-50years","8: 51-55years", "9: 56-60years","10: 61-65years","11: 66-70years","12: 71-75years","13: 76-80years", "14: more than 80"))
+
+
+ 
+# --> box plot: Technico-orientation according to the gender (not relevant because OTEXE is a character variable and shouldn't be use as numerical one)
+
+ch = table(df$UTATO) 
+boxplot(ch, main = "Box Plot of Revenues") 
+boxplot(df, names(x = df$SEXEP), fill = df$OTEXE ) + 
+  geom_bar(position = "stack") + 
+  labs(x = "SEXEP", y = "Count", fill = "OTEXE") + 
+  ggtitle("Stacked Bar Chart showing the technico-orientation of the farms in function of the farmer's gender") 
+
+ 
+
+# --> compare the age and the gender through different chart
+
+# Create box plot (not relevant because OTEXE is a character variable and shouldn't be use as numerical one)
+boxplot(df$SEXEP, df$TRA05, names = c("SEXEP", "TRA05"), main = "Box Plot of SEXEP and TRA05", ylab = "Values") 
+
+# Create bar plot 
+age_rev <- df[c("TRA05", "SEXEP")] 
+print(age_rev) 
+
+#Selection of the rows 
+sel_rows <- subset(age_rev, TRA05 ==6 ) 
+print(sel_rows) 
+barplot(table(df$TRA05), beside = TRUE, legend.text = c("SEXEP", "TRA05"), main = "Bar Plot“) 
+
+# Create scatter plot 
+plot(df$SEXEP, df$TRA05, main = "Scatter Plot of SEXEP and TRA05", xlab = "SEXEP", ylab = "TRA05") 
+
+# Create density plot 
+plot(density(df$SEXEP), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$TRA05), col = "blue", lwd = 2) 
+legend("topright", legend = c("SEXEP", "TRA05"), col = c("red", "blue"), lwd = 2) 
+
+
+
+
+
+## downloading different package ##
+# Install and load the 'moments' package for skewness 
+install.packages("moments") 
+library(moments) 
+
+ 
+# Install and load the 'psych' package for cv 
+install.packages("psych") 
+library(psych) 
+
+
+# Install and load the 'psychometric' package for skewness 
+install.packages("psychometric") 
+library(psychometric) 
+
+
+# Install and load the 'cvms' package for coefficient of variation 
+install.packages("cvms") 
+library(cvms) 
+
+ 
+
+df$SEXEP <- as.numeric(as.character(df$SEXEP))
+
+## Inferential statistics ##
+
+# Calculate the coefficients of variation, skewness and kurtosis of the teacher's heights (taille) of all students. 
+cvms::(df$TRA05, na.rm = TRUE) #error 
+skewnebaseline_multinomial()skewness(df$TRA05, na.rm = TRUE) 
+kurtosis(df$TRA05, na.rm = TRUE) 
+
+
+# simple t.test with One variable
+
+t.test(df$STREV) 
+t.test(df$TRA05) 
+t.test(df$CHAFF) 
+t.test(df$UTATO) 
+
+
+ 
+# testing the relevance of the variable we created
+t.test(df$CHAFF, df$STREV) 
+result <- t.test(df$CHAFF, df$STREV) 
+
+	# --> graphic representation of this t.test
+# Create box plot 
+boxplot(df$CHAFF, df$STREV, names = c("df$CHAFF", "df$STREV"), main = "Box Plot", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$CHAFF, df$STREV), beside = TRUE, legend.text = c("Group 1", "Group 2"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$CHAFF, df$STREV, main = "Scatter Plot", xlab = "CHAFF", ylab = "STREV") 
+
+# Create density plot 
+plot(density(df$CHAFF), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$STREV), col = "blue", lwd = 2) 
+legend("topright", legend = c("CHAFF", "STREV"), col = c("red", "blue"), lwd = 2) 
+
+ 
+
+ 
+# t.test to verify the significance of the barplot of the graphical analysis
+t.test(df$STREV, df$TRA05) 
+result <- t.test(df$TRA05, df$STREV) 
+
+	# --> graphic representation of this t.test
+
+# Create box plot 
+boxplot(df$TRA05, df$STREV, names = c("TRA05", "STREV"), main = "Box Plot of TRA05 and STREV", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$TRA05, df$STREV), beside = TRUE, legend.text = c("TRA05", "STREV"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$TRA05, df$STREV, main = "Scatter Plot of TRA05 and STREV", xlab = "TRA05", ylab = "STREV") 
+
+# Create density plot 
+plot(density(df$TRA05), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$STREV), col = "blue", lwd = 2) 
+legend("topright", legend = c("TRA05", "STREV"), col = c("red", "blue"), lwd = 2) 
+
+ 
+
+ 
+# other t.test…
+
+t.test(df$OTEXE, df$STREV) 
+result <- t.test(df$OTEXE, df$STREV) 
+
+# Create box plot 
+boxplot(df$OTEXE, df$STREV, names = c("OTEXE", "STREV"), main = "Box Plot of OTEXE and STREV", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$OTEXE, df$STREV), beside = TRUE, legend.text = c("OTEXE", "STREV"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$OTEXE, df$STREV, main = "Scatter Plot of OTEXE and STREV", xlab = "OTEXE", ylab = "STREV") 
+
+# Create density plot 
+plot(density(df$OTEXE), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$STREV), col = "blue", lwd = 2) 
+legend("topright", legend = c("OTEXE", "STREV"), col = c("red", "blue"), lwd = 2) 
+
+ 
+
+t.test(df$SEXEP, df$STREV) 
+result <- t.test(df$SEXEP, df$STREV) 
+
+# Create box plot 
+boxplot(df$SEXEP, df$STREV, names = c("SEXEP", "STREV"), main = "Box Plot of SEXEP and STREV", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$SEXEP, df$STREV), beside = TRUE, legend.text = c("SEXEP", "STREV"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$SEXEP, df$STREV, main = "Scatter Plot of SEXEP and STREV", xlab = "SEXEP", ylab = "STREV") 
+
+# Create density plot 
+plot(density(df$SEXEP), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$STREV), col = "blue", lwd = 2) 
+legend("topright", legend = c("SEXEP", "STREV"), col = c("red", "blue"), lwd = 2) 
+
+
+result$statistic  
+
+result$p.value 
+
+result$parameter # length(X) - 1    
+
+result$conf.int # 95% interval 
+
+ 
+
+
+t.test(df$TRA05, df$OTEXE) 
+result <- t.test(df$TRA05, df$OTEXE) 
+
+# Create box plot 
+boxplot(df$TRA05, df$OTEXE, names = c("TRA05", "OTEXE"), main = "Box Plot of TRA05 and OTEXE", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$TRA05, df$OTEXE), beside = TRUE, legend.text = c("TRA05", "OTEXE"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$TRA05, df$OTEXE, main = "Scatter Plot of TRA05 and OTEXE", xlab = "TRA05", ylab = "OTEXE") 
+
+# Create density plot 
+plot(density(df$TRA05), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$OTEXE), col = "blue", lwd = 2) 
+legend("topright", legend = c("TRA05", "OTEXE"), col = c("red", "blue"), lwd = 2) 
+
+ 
+
+t.test(df$CHAFF, df$TRA05) 
+result <- t.test(df$CHAFF, df$TRA05) 
+
+# Create box plot 
+boxplot(df$CHAFF, df$TRA05, names = c("CHAFF", "TRA05"), main = "Box Plot of CHAFF and TRA05", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$CHAFF, df$TRA05), beside = TRUE, legend.text = c("CHAFF", "TRA05"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$TRA05, df$CHAFF, main = "Scatter Plot of TRA05 and CHAFF", xlab = "TRA05", ylab = "CHAFF") 
+
+# Create density plot 
+plot(density(df$CHAFF), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+
+lines(density(df$TRA05), col = "blue", lwd = 2) 
+legend("topright", legend = c("CHAFF", "TRA05"), col = c("red", "blue"), lwd = 2) 
+
+
+ 
+
+t.test(df$CHAFF, df$UTATO) 
+result <- t.test(df$CHAFF, df$TRA05) 
+
+# Create box plot 
+boxplot(df$CHAFF, df$UTATO, names = c("CHAFF", "UTATO"), main = "Box Plot of CHAFF and UTATO", ylab = "Values") 
+
+# Create bar plot 
+barplot(table(df$CHAFF, df$UTATO), beside = TRUE, legend.text = c("CHAFF", "TRA05"), main = "Bar Plot") 
+
+# Create scatter plot 
+plot(df$UTATO, df$CHAFF, main = "Scatter Plot of UTATO and CHAFF", xlab = "UTATO", ylab = "CHAFF") 
+
+# Create density plot 
+plot(density(df$CHAFF), main = "Density Plot", xlab = "Values", col = "red", lwd = 2) 
+lines(density(df$UTATO), col = "blue", lwd = 2) 
+legend("topright", legend = c("CHAFF", "TRA05"), col = c("red", "blue"), lwd = 2) 
